@@ -1674,7 +1674,9 @@ static void init_hardware() {
    _init_cycle_counter();
    RPI_SetGpioPinFunction(MODE7_PIN,    FS_OUTPUT);
    RPI_SetGpioValue(MODE7_PIN,          1);
-   get_hdisplay(); //forces early reboot if no hdmi connector fitted
+   // Some monitor/adapter chains briefly read as "no HDMI" very early in boot,
+   // which can cause an endless reset loop here. Later framebuffer setup still
+   // validates the display mode once the output path has had longer to settle.
 
 #ifdef RPI4
    *EMMC_LEGACY = *EMMC_LEGACY | 2;  //bit enables legacy SD controller
