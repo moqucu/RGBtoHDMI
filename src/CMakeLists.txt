@@ -29,7 +29,8 @@
 
 # CMake 2.8.10 Documentation: http://www.cmake.org/cmake/help/v2.8.10/cmake.html
 
-cmake_minimum_required( VERSION 2.8 )
+# The ...3.31 upper bound lets CMake 4.x (which dropped < 3.5 compatibility) configure the project
+cmake_minimum_required( VERSION 2.8...3.31 )
 
 # Mark the language as C so that CMake doesn't try to test the C++
 # cross-compiler's ability to compile a simple program because that will fail
@@ -40,6 +41,8 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
 # Add any C compiler flags here. The C flags concerned with processor tuning
 # are in the toolchain files toolchain-arm-none-eabi-bcm2835.cmake, etc.
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2" )
+# GCC 15 defaults to C23, where "int f();" means no arguments; the code relies on the older meaning
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu17" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles" )
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fomit-frame-pointer " )
@@ -177,7 +180,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_custom_target(gitversion ALL)
 
 add_custom_command(
-    TARGET gitversion
+    TARGET gitversion POST_BUILD
     COMMAND bash version.sh
 )
 
